@@ -27,6 +27,7 @@ import time
 #+ Написать функцию оповещения при идеальных погодных условиях
 #+ Добавлена возможность отключения функции оповещения по команде /stop
 # DEPLOY ON THE SERVER
+# Исправлены баги: не верная проверка второго числа у ветра, проверялось значение от первого + не большой рефакторинг кода
 # Версия 4.0
 #- Будет добавлена возможность сохранять идеальные дни для статистики в отдельный файл
 #- Просмотр в боте статистики идеальных дней по категориям
@@ -112,23 +113,16 @@ def create_ideal_weather(wind):
     else:
         one_part_digit = re.sub('\D', '', str(one_part_digit))
         two_part_digit = re.sub('\D', '', str(two_part_digit))
+        print(str(one_part_digit[0])+str(two_part_digit[0]))
         # проверяем идеальные условия погоды
-        for item in one_part_digit:
-            if int(one_part_digit[0]) <=2:
-                yes_or_no = True
-            else: 
-                yes_or_no = False 
-        for item in two_part_digit:
-            if int(two_part_digit[0]) <=5:
-                yes_or_no = True
-            else: 
-                yes_or_no = False
-    if yes_or_no == False:
-        return print('okay, miss this day')
+        if int(one_part_digit[0]) <= 2 & int(two_part_digit[0]) <=5:
+            yes_or_no = True
+        else: 
+            yes_or_no = False 
     # делаем тоже самое только для 5 часов утра
     main_part_digit = 'None'
-    one_part_digit = re.findall(r'\d-', wind[0])
-    two_part_digit = re.findall(r'-\d+', wind[0])
+    one_part_digit = re.findall(r'\d-', wind[1])
+    two_part_digit = re.findall(r'-\d+', wind[1])
     yes_or_no = False
     if not one_part_digit:
         main_part_digit = wind[0]
@@ -140,38 +134,19 @@ def create_ideal_weather(wind):
     else:
         one_part_digit = re.sub('\D', '', str(one_part_digit))
         two_part_digit = re.sub('\D', '', str(two_part_digit))
+        print(str(one_part_digit[0])+str(two_part_digit[0]))
         # проверяем идеальные условия погоды
-        for item in one_part_digit:
-            if int(one_part_digit[0]) <=2:
-                yes_or_no = True
-            else: 
-                yes_or_no = False 
-        for item in two_part_digit:
-            if int(two_part_digit[0]) <=5:
-                yes_or_no = True
-            else: 
-                yes_or_no = False
- 
+        if int(one_part_digit[0]) <= 2 & int(two_part_digit[0]) <= 5:
+            yes_or_no = True
+        else: 
+            yes_or_no = False 
     # тычкуем в список идеальных дней
     if yes_or_no == True:
         print('okay, add this day')
         return True
     else:
+        print('okay, miss this day')
         return False
-        
-
-# Тычкуем идеальную погоду
-# def write_ideal(ideal, index):
-#     i = 0
-#     try:
-#         if not ideal[index] | ideal[index] == False:
-#             i = 1
-#             return False
-#     except:
-#         i = 1
-#         return False
-#     if i == 0:
-#         return True
         
 # Создаем список погоды на 10 дней
 def create_lists_weather():
@@ -239,15 +214,6 @@ def notice_ideal_days():
         for char in ']':
             result = result.replace(char, '\n')
         return result
-        # for index,  day in enumerate(DAYS):
-        #     print('Condition day: ' + str(day.condition) + ' index day: ' + str(index))
-        #     if day.condition != True:
-        #         del DAYS[index]
-        #         print('DAY INDEX = ' + str(index) + ', and now day deleted')
-        #     else: 
-        #         if day.condition == True:
-        #             print('DAY INDEX = ' + str(index) + ', and this condition day = ' + str(day.condition))
-        # print(str(len(DAYS)))
         
 # Создаем клавиатуру и одну кнопку "обновить" 
 markup = types.InlineKeyboardMarkup(row_width=1)
